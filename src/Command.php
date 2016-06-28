@@ -6,10 +6,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Tests\AbstractTest;
+use Gharkin\Order;
 
 class Command extends BaseCommand {
 
     protected function configure()
+
     {
         $this
             ->setName('sum')
@@ -23,7 +26,7 @@ class Command extends BaseCommand {
                 'discount',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'Discount class id'
+                'Discount class id (3for2 || BuyShampooGetConditionerFor50off)'
             )
         ;
     }
@@ -32,8 +35,21 @@ class Command extends BaseCommand {
     {
         $file = $input->getArgument('file');
 
-
-
         $discount = $input->getOption('discount');
+
+        $order = new Order($file);
+
+        if ($discount) {
+            // 3for2 |
+            $class = "Gharkin\\Discounts\\Discount$discount";
+
+            $order->addDiscount(new $class);
+        }
+
+        $total = $order->getTotal();
+
+        echo $total;
+
+        return $order->getTotal();
     }
 }

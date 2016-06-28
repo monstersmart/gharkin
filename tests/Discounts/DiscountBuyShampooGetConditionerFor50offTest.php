@@ -9,7 +9,7 @@ use Tests\AbstractTest;
 class DiscountBuyShampooGetConditionerFor50offTest extends AbstractTest {
     public function testDiscount() {
 
-        $file = $this->getRoot().'/tests/datasets/BuyShampooGetConditionerFor50off.xml';
+        $file = self::getRoot().'/tests/datasets/BuyShampooGetConditionerFor50off.xml';
 
         $order = new Order($file);
 

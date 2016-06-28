@@ -8,7 +8,7 @@ use Tests\AbstractTest;
 class Discount3for2DisabledTest extends AbstractTest {
     public function testDiscount() {
 
-        $file = $this->getRoot().'/tests/datasets/3ForThePriceOf2.xml';
+        $file = self::getRoot().'/tests/datasets/3ForThePriceOf2.xml';
 
         $order = new Order($file);
 
