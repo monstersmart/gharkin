@@ -1,7 +1,9 @@
 <?php
 namespace Gharkin;
 
+use Gharkin\Discounts\DiscountInterface;
 use SimpleXMLElement;
+use Gharkin\Lib\SimpleXMLElementHelper;
 
 class Order {
     protected $xml;
@@ -11,7 +13,7 @@ class Order {
     {
         $this->xml = $xml;
 
-        $order = simplexml_load_file($xml);
+        $order = SimpleXMLElementHelper::parseFile($xml, true);
 
         $this->order = $this->_parseOrder($order);
     }
@@ -21,15 +23,41 @@ class Order {
     }
     public function getTotal() {
 
+        foreach ($this->discounts as $discount) {
+            /* @var $discount DiscountInterface */
+            $this->order = $discount->apply($this->order);
+        }
+
+        $sum = 0;
+
+        foreach ($this->order as $order) {
+            $sum += $order['price'];
+        }
+
+        return $sum;
     }
-    protected function _parseOrder(SimpleXMLElement $xml) {
+    protected function _parseOrder($order) {
 
         $list = array();
 
+        foreach ($order['xml']['children'][0]['children'] as $node) {
+            $item = array();
 
-//        var_dump($xml->products);
+            foreach ($node['attributes'] as $attr) {
 
+                if ($attr['name'] === 'title') {
+                    $item['title'] = $attr['val'];
+                }
 
+                if ($attr['name'] === 'price') {
+                    $item['price'] = intval($attr['val'] * 100);
+                }
+            }
+
+            $item['category'] = $node['children'][0]['text'];
+
+            $list[] = $item;
+        }
 
         return $list;
     }
